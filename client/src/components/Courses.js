@@ -8,6 +8,7 @@ const Course = (props) => {
             <Link className="course--module course--link" to={`/courses/${props.id}`} >
                 <h4 className="course--label">Course</h4>
                 <h3 className="course--title">{props.title}</h3>
+                <h4 className="course--label">authored by: {props.author}</h4>
             </Link>
         </div>
     );
@@ -41,7 +42,7 @@ const Courses = () => {
 
     let display;
     if(courses.length > 0) {
-        display = courses.map(course => <Course title={course.title} key={course.id} id={course.id} />);
+        display = courses.map(course => <Course title={course.title} key={course.id} id={course.id} author={`${course.user.firstName} ${course.user.lastName}`} />);
     }
     
 

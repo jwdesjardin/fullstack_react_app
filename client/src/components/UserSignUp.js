@@ -1,13 +1,38 @@
 import { Link } from 'react-router-dom';
+import {useContext, useRef } from 'react';
+import { AuthContext } from '../context/auth';
 
 const UserSignUp = (props) => {
+    const { actions } = useContext(AuthContext);
+     
+    const firstNameInput = useRef('');
+    const lastNameInput = useRef('');
+    const emailInput = useRef('');
+    const passwordInput = useRef('');
+    const confirmPasswordInput = useRef('');
+
+
+
     const cancelHandler = (event) => {
         event.preventDefault();
-        // location.href='/';
+        props.history.goBack();
     }
 
-    const signUpHandler = () => {
-        //handle post request to sign up user
+    const signUpHandler = async (event) => {
+        event.preventDefault();
+        const body = {
+            "firstName": firstNameInput.current.value,
+            "lastName": lastNameInput.current.value,
+            "emailAddress": emailInput.current.value,
+            "password": confirmPasswordInput.current.value
+        };
+        const response =  await actions.createUser(body);
+        if (response === null) {
+            alert('User not created');
+        } else {
+            actions.signIn(emailInput.current.value, confirmPasswordInput.current.value);
+            props.history.push('/');
+        }
     }
 
 
@@ -17,11 +42,11 @@ const UserSignUp = (props) => {
                 <h1>Sign Up</h1>
                 <div>
                     <form>
-                        <div><input id="firstName" name="firstName" type="text"  placeholder="First Name" defaultValue /></div>
-                        <div><input id="lastName" name="lastName" type="text"  placeholder="Last Name" defaultValue /></div>
-                        <div><input id="emailAddress" name="emailAddress" type="text"  placeholder="Email Address" defaultValue /></div>
-                        <div><input id="password" name="password" type="password"  placeholder="Password" defaultValue /></div>
-                        <div><input id="confirmPassword" name="confirmPassword" type="password"  placeholder="Confirm Password" defaultValue /></div>
+                        <div><input id="firstName" name="firstName" type="text"  placeholder="First Name" ref={firstNameInput} /></div>
+                        <div><input id="lastName" name="lastName" type="text"  placeholder="Last Name" ref={lastNameInput} /></div>
+                        <div><input id="emailAddress" name="emailAddress" type="text"  placeholder="Email Address" ref={emailInput} /></div>
+                        <div><input id="password" name="password" type="password"  placeholder="Password" ref={passwordInput} /></div>
+                        <div><input id="confirmPassword" name="confirmPassword" type="password"  placeholder="Confirm Password" ref={confirmPasswordInput} /></div>
                         <div className="grid-100 pad-bottom"><button className="button" onClick={signUpHandler} type="submit">Sign Up</button><button className="button button-secondary" onClick={cancelHandler}>Cancel</button></div>
                     </form>
                 </div>

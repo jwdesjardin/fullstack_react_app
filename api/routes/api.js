@@ -45,7 +45,7 @@ router.post('/users', userValidator, asyncHandler(async (req, res) => {
   try {
     const user = await User.create(req.body);
     res.location('/');
-    res.status(201).send('Successfuly created User');
+    res.status(201).json(user);
   } catch (error) {
       const err = new Error('That Email is already in use');
       err.status = 400;

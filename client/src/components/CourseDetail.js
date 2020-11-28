@@ -1,28 +1,33 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import {AuthContext } from '../context/auth';
 
 
 
 
 
 const ActionBar = (props) => {
-    
-    const onDeleteClick = () => {
-        axios.delete(`http://localhost:5000/api/courses/${props.id}`)
-        .then(res => {
-            console.log(res)
-        })
-        .catch(err => {
-            console.log(err);
-            throw err;
-        })
+    const { actions, authUser, userPassword } = useContext(AuthContext);
+
+    const onDeleteClick = async () => {
+        if (props.course.userId === authUser.id){
+            try {
+                await actions.deleteCourse(props.course, authUser.emailAddress, userPassword);
+                props.history.push('/');
+            } catch (error) {
+                console.log(error);
+            }
+            
+        } else {
+            alert ('you are not authorized to delete this');
+        }
     }
 
     return (
         <div className="actions--bar">
             <div className="bounds">
-                <div className="grid-100"><span><Link className="button" to={`/courses/${props.id}/update`}>Update Course</Link><Link className="button" onClick={onDeleteClick} to="/">Delete Course</Link></span><Link
+                <div className="grid-100"><span><Link className="button" to={`/courses/${props.course.id}/update`}>Update Course</Link><Link className="button" onClick={onDeleteClick} to="/">Delete Course</Link></span><Link
                     className="button button-secondary" to="/">Return to List</Link></div>
             </div>
         </div>
@@ -46,14 +51,14 @@ const CourseDetail = (props) => {
     },[id]);
 
     
-    const materialDisplay = course.materialsNeeded ? course.materialsNeeded.forEach(material => <li>{material}</li>) : '';
+    // const materialDisplay = course.materialsNeeded ? course.materialsNeeded.forEach(material => <li>{material}</li>) : '';
     const estimatedTimeDisplay = course.estimatedTime || '';
     
 
 
     return (
         <div>
-            <ActionBar id={course.id} />
+            <ActionBar course={course} />
             <div className="bounds course--detail">
                 <div className="grid-66">
                     <div className="course--header">
@@ -75,7 +80,7 @@ const CourseDetail = (props) => {
                             <li className="course--stats--list--item">
                                 <h4>Materials Needed</h4>
                                 <ul>
-                                    {materialDisplay}
+                                    {course.materialsNeeded}
                                 </ul>
                             </li>
                         </ul>

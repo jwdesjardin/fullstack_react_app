@@ -1,4 +1,7 @@
-import axios from 'axios';
+
+import { useRef, useContext } from 'react';
+import { AuthContext } from '../context/auth';
+
 
 const ValidationErrors = () => {
     return (
@@ -13,25 +16,42 @@ const ValidationErrors = () => {
         </div>
     );
 }
+
 const CreateCourse = (props) => {
+
+    const { authUser, userPassword, actions } = useContext(AuthContext);
+
+    const titleInput = useRef('');
+    const descInput = useRef('');
+    const estTimeInput = useRef('');
+    const materialsInput = useRef('');
 
     const cancelHandler = (event) => {
         event.preventDefault();
         props.history.goBack();
     }
 
-    const createCourseHandler = (event) => {
+    const createCourseHandler = async (event) => {
         event.preventDefault();
-        axios.post('http://localhost:5000/api/courses', {
-            "title": "Second Course",
-            "description": "My course description",
-            "userId": 1
-        })
-            .then(res => {
-              console.log(res)
-            })
-            .catch(err => console.log(err));
-        //handle sending post request to api/courses
+        const body = {
+            "title": titleInput.current.value,
+            "description": descInput.current.value,
+            "userId": authUser.id
+        };
+        estTimeInput.current.value !== '' ? body.estimatedTime = estTimeInput.current.value : body.estimatedTime = null;
+        materialsInput.current.value !== '' ? body.materialsNeeded = materialsInput.current.value : body.materialsNeeded = null;
+        try {
+            const course = await actions.createCourse(body, authUser.emailAddress, userPassword);
+            if (course === 'Successfuly created Course'){
+                props.history.push('/');
+            } else {
+                alert('Course not created');
+            }
+        } catch (error) {
+            throw error;
+        }
+        
+       
     }
 
     return (
@@ -43,11 +63,11 @@ const CreateCourse = (props) => {
                 <div className="grid-66">
                 <div className="course--header">
                     <h4 className="course--label">Course</h4>
-                    <div><input id="title" name="title" type="text" className="input-title course--title--input" placeholder="Course title..." defaultValue /></div>
+                    <div><input id="title" name="title" type="text" className="input-title course--title--input" placeholder="Course title..." ref={titleInput}  /></div>
                     <p>By Joe Smith</p>
                 </div>
                 <div className="course--description">
-                    <div><textarea id="description" name="description"  placeholder="Course description..." defaultValue={""} /></div>
+                    <div><textarea id="description" name="description"  placeholder="Course description..." ref={descInput}  /></div>
                 </div>
                 </div>
                 <div className="grid-25 grid-right">
@@ -55,11 +75,11 @@ const CreateCourse = (props) => {
                     <ul className="course--stats--list">
                     <li className="course--stats--list--item">
                         <h4>Estimated Time</h4>
-                        <div><input id="estimatedTime" name="estimatedTime" type="text" className="course--time--input" placeholder="Hours" defaultValue /></div>
+                        <div><input id="estimatedTime" name="estimatedTime" type="text" className="course--time--input" placeholder="Hours" ref={estTimeInput}  /></div>
                     </li>
                     <li className="course--stats--list--item">
                         <h4>Materials Needed</h4>
-                        <div><textarea id="materialsNeeded" name="materialsNeeded"  placeholder="List materials..." defaultValue={""} /></div>
+                        <div><textarea id="materialsNeeded" name="materialsNeeded"  placeholder="List materials..." ref={materialsInput}  /></div>
                     </li>
                     </ul>
                 </div>
