@@ -12,11 +12,11 @@ const UserSignIn = (props) => {
     const signInHandler = async (event) => {
         event.preventDefault();
         const response = await actions.signIn(emailInput.current.value, passwordInput.current.value);
-        if (response === null){
-            alert('Credentials not found');
-        } else {
+        if (response === 'success'){
             const loc = props.location.state ? props.location.state.from : '/';
             props.history.push(loc);
+        } else {
+            alert('Credentials not found');
         }
     }
 

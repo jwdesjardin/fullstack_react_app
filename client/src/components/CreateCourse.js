@@ -40,15 +40,16 @@ const CreateCourse = (props) => {
         };
         estTimeInput.current.value !== '' ? body.estimatedTime = estTimeInput.current.value : body.estimatedTime = null;
         materialsInput.current.value !== '' ? body.materialsNeeded = materialsInput.current.value : body.materialsNeeded = null;
+
         try {
-            const course = await actions.createCourse(body, authUser.emailAddress, userPassword);
-            if (course === 'Successfuly created Course'){
+            const response = await actions.createCourse(body, authUser.emailAddress, userPassword);
+            if (response === 'success'){
                 props.history.push('/');
             } else {
                 alert('Course not created');
             }
         } catch (error) {
-            throw error;
+            console.log(error);
         }
         
        

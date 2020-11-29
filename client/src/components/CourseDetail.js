@@ -24,11 +24,19 @@ const ActionBar = (props) => {
         }
     }
 
+    const authButtons = authUser === null ? '' : (<span>
+        <Link className="button" to={`/courses/${props.course.id}/update`}>Update Course</Link>
+        <Link className="button" onClick={onDeleteClick} to="/">Delete Course</Link>
+        </span>); 
+
+
     return (
         <div className="actions--bar">
             <div className="bounds">
-                <div className="grid-100"><span><Link className="button" to={`/courses/${props.course.id}/update`}>Update Course</Link><Link className="button" onClick={onDeleteClick} to="/">Delete Course</Link></span><Link
-                    className="button button-secondary" to="/">Return to List</Link></div>
+                <div className="grid-100">
+                    {authButtons}
+                    <Link className="button button-secondary" to="/">Return to List</Link>
+                </div>
             </div>
         </div>
     );

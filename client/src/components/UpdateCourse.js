@@ -26,7 +26,7 @@ const UpdateCourse = (props) => {
   const materialsInput = useRef('');
 
 
-  const updateHandler = (event) => {
+  const updateHandler = async (event) => {
     event.preventDefault();
     const body = {
         "id": course.id,
@@ -36,8 +36,18 @@ const UpdateCourse = (props) => {
     };
     estTimeInput.current.value !== '' ? body.estimatedTime = estTimeInput.current.value : body.estimatedTime = null;
     materialsInput.current.value !== '' ? body.materialsNeeded = materialsInput.current.value : body.materialsNeeded = null;
-    console.log('prepped for update :', body);
-    actions.updateCourse(course, body, authUser.id, authUser.emailAddress, userPassword);
+
+    try {
+      const response = await actions.updateCourse(course, body, authUser.emailAddress, userPassword);
+      if (response === 'success'){
+        props.history.push('/');
+      } else {
+        alert('Course not updated');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    
   }
 
   const cancelHandler = (event) => {

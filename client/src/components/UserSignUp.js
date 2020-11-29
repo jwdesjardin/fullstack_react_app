@@ -26,13 +26,19 @@ const UserSignUp = (props) => {
             "emailAddress": emailInput.current.value,
             "password": confirmPasswordInput.current.value
         };
-        const response =  await actions.createUser(body);
-        if (response === null) {
-            alert('User not created');
-        } else {
-            actions.signIn(emailInput.current.value, confirmPasswordInput.current.value);
-            props.history.push('/');
+
+        try {
+            const response =  await actions.createUser(body);
+            if (response === 'success') {
+                await actions.signIn(emailInput.current.value, confirmPasswordInput.current.value);
+                props.history.push('/');
+            } else {
+                alert('User not created');
+            }
+        } catch (error) {
+            console.log(error);
         }
+        
     }
 
 

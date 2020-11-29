@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-// import Cookies from 'js-cookie';
-import { Redirect, Route } from 'react-router-dom';
 
 
 
@@ -11,47 +9,13 @@ export const Provider = (props) => {
 
   const [authUser, setAuthUser] = useState(null);
   const [userPassword, setUserPassword] = useState('');
+
+
   const [courses, setCourses] = useState([]);
 
-  function PrivateRoute({ component: Component , ...rest }) {
-    
-    return (
-      <Route
-        {...rest}
-        render={(props) =>
-          authUser !== null ? (
-            <Component {...props} {...rest} />
-          ) : (
-            <Redirect
-              to={{
-                pathname: "/signin",
-                state: { from: props.location }
-              }}
-            />
-          )
-        }
-      />
-    );
-  }
-
-  const signInUser = async (email, password) => {
   
-    const user = await getUser(email, password);
-    
-    if (user !== null) {
-       setAuthUser(user);
-       setUserPassword(password);
-    }
-    
-    return user;
- }
+  const signInUser = async (email, password) => {
 
-  const signOutUser = () => {
-    setAuthUser(null);
-    setUserPassword('');
-  }
-
-  const getUser = async (email, password) => {
     const credentials = btoa(email + ':' + password);
     const basicAuth = 'Basic ' + credentials;
 
@@ -62,57 +26,33 @@ export const Provider = (props) => {
         }});
       
       if (response.status === 200) {
-          return response.data;
-      }
-      else if (response.status === 401) {
-        const error = new Error('User Not Found');
-        error.status = 401;
-        throw error;
+        setAuthUser(response.data);
+        setUserPassword(password);
+        return 'success';
       }
     }
     catch(error) {
-        throw error;
+        console.log(error);
     }
-
-    // axios.get('http://localhost:5000/api/users',  {
-    //   headers: {
-    //     Authorization: basicAuth
-    //   }
-    // }).then(response => {
-    //     if (response.status === 200) {
-    //         return response.data;
-    //       }
-    //       else if (response.status === 401) {
-    //         return null;
-    //       }
-    //       else {
-    //         throw new Error();
-    //       }
-    // })
-    // .catch(error => {
-    //     throw error;
-    // })
+      
+ }
 
 
-
-    // return user;
+  const signOutUser = () => {
+    setAuthUser(null);
+    setUserPassword('');
   }
 
+
   const createUser = async (body) => {
-    
-    axios.post('http://localhost:5000/api/users', body)
-    .then(response => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/users', body)
       if (response.status === 201) {
-        return response.text;
+        return 'success';
       }
-      else if (response.status === 400) {
-        return null;
-      }
-      else {
-        throw new Error();
-      }
-    })
-    .catch(err => console.log(err));
+    } catch (error) {
+      console.log(error);
+    }
   }
 
 
@@ -120,13 +60,15 @@ export const Provider = (props) => {
   //COURSES
 
 
-  const getCourses = () => {
-    axios.get('http://localhost:5000/api/courses')
-    .then(data => {
+  const getCourses = async () => {
+    try {
+      const data = await axios.get('http://localhost:5000/api/courses')
       setCourses(data.data);
-      return (data.data)
-    })
-    .catch(err => console.log(err));
+      return 'success';
+    } catch (error) {
+      console.log(error);
+    }
+
   }
 
 
@@ -139,60 +81,63 @@ export const Provider = (props) => {
         headers: {
           Authorization: basicAuth
         }});
+
       if(res.status === 201){
-        return res.data;
-      } else {
-        throw new Error('Unable to create course');
-      }
+        await getCourses();
+        return 'success';
+      } 
+
     } catch (error) {
       throw error;
     }
     
   }
 
-
-
-
-
-  const deleteCourse = (course, email, password) => {
+  const deleteCourse = async (course, email, password) => {
       const credentials = btoa(email + ':' + password);
       const basicAuth = 'Basic ' + credentials;
-      axios.delete(`http://localhost:5000/api/courses/${course.id}`, {
-        headers: {
-          Authorization: basicAuth
-        }})
-      .then(res => {
-        console.log('response: ', res.status);
-      })
-      .catch(err => console.log(err));
-    
-    
+
+      try {
+        const response = await axios.delete(`http://localhost:5000/api/courses/${course.id}`, {
+          headers: {
+            Authorization: basicAuth
+          }})
+
+          if (response.status === 204){
+            await getCourses();
+            return 'success';
+          }
+      } catch (error) {
+        console.log(error);
+      }
+      
   }
 
-  const updateCourse = (course, body, userId, email, password) => {
-    if (course.userId === userId) {
-      console.log('course.userId === userId ', course.userId, userId);
+  const updateCourse = async (course, body, email, password) => {
+    
       const credentials = btoa(email + ':' + password);
       const basicAuth = 'Basic ' + credentials;
-      axios.put(`http://localhost:5000/api/courses/${course.id}`, body, {
+
+      try {
+        const response = await axios.put(`http://localhost:5000/api/courses/${course.id}`, body, {
         headers: {
           Authorization: basicAuth
-        }})
-      .then(res => {
-        console.log(res)
-      })
-      .catch(err => console.log(err));
-    }
-    console.log('course.userId !== userId ', course.userId, userId);
+        }});
+        console.log(response.status);
+        if (response.status === 204){
+          await getCourses();
+          return 'success';
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    
   }
-
-  
 
   const value = {
     authUser,
     userPassword,
     courses,
-    PrivateRoute,
     actions: {
       signIn: signInUser,
       signOut: signOutUser,

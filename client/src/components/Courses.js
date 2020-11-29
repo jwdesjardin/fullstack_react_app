@@ -30,16 +30,10 @@ const CreateCourse = () => {
 }
 
 const Courses = () => {
-    const [courses, setCourses] = useState([]);
-
+    const { courses, actions } = useContext(AuthContext);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/courses')
-        .then(data => {
-          setCourses(data.data);
-          console.log(data.data)
-        })
-        .catch(err => console.log(err));
+        actions.getCourses();
     },[]);
 
     let display;

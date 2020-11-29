@@ -1,5 +1,5 @@
 // import {useEffect, useState} from 'react';
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom';
 
 import { useContext } from 'react';
 import Courses from './components/Courses';
@@ -17,9 +17,30 @@ import NotFound from './components/NotFound';
 import Authenticated from './components/Authenticated';
 
 
-function App(props) {
+const App = () => {
 
-  const { PrivateRoute } = useContext(AuthContext);
+  const { authUser } = useContext(AuthContext);
+
+  const PrivateRoute = ({ component: Component , ...rest }) => {
+    
+    return (
+      <Route
+        {...rest}
+        render={(props) =>
+          authUser !== null ? (
+            <Component {...props} {...rest} />
+          ) : (
+            <Redirect
+              to={{
+                pathname: "/signin",
+                state: { from: props.location }
+              }}
+            />
+          )
+        }
+      />
+    );
+  }
   
   return (
     <Router>
