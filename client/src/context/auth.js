@@ -34,50 +34,100 @@ export const Provider = (props) => {
     );
   }
 
+  const signInUser = async (email, password) => {
+  
+    const user = await getUser(email, password);
+    
+    if (user !== null) {
+       setAuthUser(user);
+       setUserPassword(password);
+    }
+    
+    return user;
+ }
+
+  const signOutUser = () => {
+    setAuthUser(null);
+    setUserPassword('');
+  }
+
   const getUser = async (email, password) => {
     const credentials = btoa(email + ':' + password);
     const basicAuth = 'Basic ' + credentials;
-    const user = await axios.get('http://localhost:5000/api/users',  {
-      headers: {
-        Authorization: basicAuth
+
+    try{
+      const response = await axios.get('http://localhost:5000/api/users',  {
+        headers: {
+          Authorization: basicAuth
+        }});
+      
+      if (response.status === 200) {
+          return response.data;
       }
-    }).then(response => {
-        if (response.status === 200) {
-            console.log('successful response', response.data);
-            return response.data;
-          }
-          else if (response.status === 401) {
-            return null;
-          }
-          else {
-            throw new Error();
-          }
-    })
-    .catch(error => {
+      else if (response.status === 401) {
+        const error = new Error('User Not Found');
+        error.status = 401;
         throw error;
-    })
-    return user;
+      }
+    }
+    catch(error) {
+        throw error;
+    }
+
+    // axios.get('http://localhost:5000/api/users',  {
+    //   headers: {
+    //     Authorization: basicAuth
+    //   }
+    // }).then(response => {
+    //     if (response.status === 200) {
+    //         return response.data;
+    //       }
+    //       else if (response.status === 401) {
+    //         return null;
+    //       }
+    //       else {
+    //         throw new Error();
+    //       }
+    // })
+    // .catch(error => {
+    //     throw error;
+    // })
+
+
+
+    // return user;
   }
-  // const getCourse = async (id) => {
+
+  const createUser = async (body) => {
     
-  //   const course = await axios.get(`http://localhost:5000/api/courses/${id}`)
-  //   .then(response => {
-  //       if (response.status === 200) {
-  //           console.log(`SUCCESSFULLY got course ${id}:`, response.data);
-  //           return response.data;
-  //         }
-  //         else if (response.status === 404) {
-  //           return null;
-  //         }
-  //         else {
-  //           throw new Error();
-  //         }
-  //   })
-  //   .catch(error => {
-  //       throw error;
-  //   })
-  //   return course;
-  // }
+    axios.post('http://localhost:5000/api/users', body)
+    .then(response => {
+      if (response.status === 201) {
+        return response.text;
+      }
+      else if (response.status === 400) {
+        return null;
+      }
+      else {
+        throw new Error();
+      }
+    })
+    .catch(err => console.log(err));
+  }
+
+
+
+  //COURSES
+
+
+  const getCourses = () => {
+    axios.get('http://localhost:5000/api/courses')
+    .then(data => {
+      setCourses(data.data);
+      return (data.data)
+    })
+    .catch(err => console.log(err));
+  }
 
 
   const createCourse = async (body, email, password) => {
@@ -136,62 +186,7 @@ export const Provider = (props) => {
     console.log('course.userId !== userId ', course.userId, userId);
   }
 
-  const createUser = async (body) => {
-    
-    axios.post('http://localhost:5000/api/users', body)
-    .then(response => {
-      if (response.status === 201) {
-        return response.text;
-      }
-      else if (response.status === 400) {
-        return null;
-      }
-      else {
-        throw new Error();
-      }
-    })
-    .catch(err => console.log(err));
-  }
-
-  const signInUser = async (email, password) => {
-     // GET REQUEST /USERS
-     console.log('Sign in initiated.....');
-     const user = await getUser(email, password);
-     
-    
-     console.log('SIGN ING USER', user);
-     if (user !== null) {
-       console.log('SETTING USER');
-       //SET STATE
-        setAuthUser(user);
-        setUserPassword(password);
-
-    //    //SET A COOKIE 
-    //    const cookieOptions = {
-    //      expires: 1 // 1 day
-    //    };
-    //    Cookies.set('authenticatedUser', JSON.stringify(user), {cookieOptions});
- 
-     }
-     
-     return user;
   
-  }
-
-  const signOutUser = () => {
-    setAuthUser(null);
-    setUserPassword('');
-    // Cookies.remove('authenticatedUser');
-  }
-
-  const getCourses = () => {
-    axios.get('http://localhost:5000/api/courses')
-    .then(data => {
-      setCourses(data.data);
-      return (data.data)
-    })
-    .catch(err => console.log(err));
-  }
 
   const value = {
     authUser,

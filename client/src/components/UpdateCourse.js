@@ -20,10 +20,10 @@ const UpdateCourse = (props) => {
 
     
 
-    const titleInput = useRef('');
-    const descInput = useRef('');
-    const estTimeInput = useRef('');
-    const materialsInput = useRef('');
+  const titleInput = useRef('');
+  const descInput = useRef('');
+  const estTimeInput = useRef('');
+  const materialsInput = useRef('');
 
 
   const updateHandler = (event) => {

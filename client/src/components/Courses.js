@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../context/auth';
 
 const Course = (props) => {
     return (
@@ -30,6 +31,7 @@ const CreateCourse = () => {
 
 const Courses = () => {
     const [courses, setCourses] = useState([]);
+
 
     useEffect(() => {
         axios.get('http://localhost:5000/api/courses')

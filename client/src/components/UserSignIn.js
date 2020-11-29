@@ -6,22 +6,23 @@ const UserSignIn = (props) => {
 
     const { actions } = useContext(AuthContext);
 
-    const emailInput = useRef('email');
-    const passwordInput = useRef('password');
+    const emailInput = useRef('');
+    const passwordInput = useRef('');
 
-    console.log(emailInput.current.value, passwordInput.current.value);
+    const signInHandler = async (event) => {
+        event.preventDefault();
+        const response = await actions.signIn(emailInput.current.value, passwordInput.current.value);
+        if (response === null){
+            alert('Credentials not found');
+        } else {
+            const loc = props.location.state ? props.location.state.from : '/';
+            props.history.push(loc);
+        }
+    }
 
     const cancelHandler = (event) => {
         event.preventDefault();
         props.history.goBack();
-    }
-
-    const signInHandler = async (event) => {
-        //handle sign in user
-        event.preventDefault();
-        await actions.signIn(emailInput.current.value, passwordInput.current.value);
-        const loc = props.location.state ? props.location.state.from : '/';
-        props.history.push(loc);
     }
     
     return (
