@@ -6,6 +6,7 @@ const UpdateCourse = (props) => {
 
   const id = props.match.params.id;
   const [course, setCourse] = useState({});
+  const [ errors, setErrors ] = useState([]);
 
   const { authUser, userPassword, actions } = useContext(AuthContext);
   
@@ -25,6 +26,21 @@ const UpdateCourse = (props) => {
   const estTimeInput = useRef('');
   const materialsInput = useRef('');
 
+  //ValidateInputs
+    const validateInputs = () => { 
+        setErrors([]);
+        if (titleInput.current.value === ''){
+            //trigger show the li message
+            setErrors(currentErrors => [...currentErrors, "Please include a title"]);
+        } 
+        if (descInput.current.value === ''){
+            //trigger show the li message
+            setErrors(currentErrors => [...currentErrors, "Please include a description"]);
+        }
+    }
+  
+  
+
 
   const updateHandler = async (event) => {
     event.preventDefault();
@@ -34,16 +50,19 @@ const UpdateCourse = (props) => {
         "description": descInput.current.value,
         "userId": authUser.id
     };
+    validateInputs();
     estTimeInput.current.value !== '' ? body.estimatedTime = estTimeInput.current.value : body.estimatedTime = null;
     materialsInput.current.value !== '' ? body.materialsNeeded = materialsInput.current.value : body.materialsNeeded = null;
 
+    // body.estimatedTime = estTimeInput.current.value !== '' ? estTimeInput.current.value : null;
+    // body.materialsNeeded = materialsInput.current.value !== '' ? materialsInput.current.value : null;
+
+    
     try {
       const response = await actions.updateCourse(course, body, authUser.emailAddress, userPassword);
       if (response === 'success'){
         props.history.push('/');
-      } else {
-        alert('Course not updated');
-      }
+      } 
     } catch (error) {
       console.log(error);
     }
@@ -55,12 +74,24 @@ const UpdateCourse = (props) => {
     props.history.goBack();
   }
 
+  const displayErrors = errors.length > 0 ? 
+        <div>
+            <h2 className="validation--errors--label">Validation errors</h2>
+            <div className="validation-errors">
+                <ul>
+                    {errors.map(error => <li>{error}</li>)}
+                </ul>
+            </div>
+        </div>
+        : "";
+
   
 
   return (
       <div className="bounds course--detail">
       <h1>Update Course</h1>
       <div>
+        {displayErrors}
         <form>
           <div className="grid-66">
             <div className="course--header">

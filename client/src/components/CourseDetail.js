@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import {AuthContext } from '../context/auth';
+import ReactMarkdown from 'react-markdown';
 
 
 
@@ -59,7 +60,6 @@ const CourseDetail = (props) => {
     },[id]);
 
     
-    // const materialDisplay = course.materialsNeeded ? course.materialsNeeded.forEach(material => <li>{material}</li>) : '';
     const estimatedTimeDisplay = course.estimatedTime || '';
     
 
@@ -75,7 +75,7 @@ const CourseDetail = (props) => {
                         {/* <p>By {course.user.firstName + ' ' + course.user.lastName}</p> */}
                     </div>
                     <div className="course--description">
-                        {course.description}
+                        <ReactMarkdown source={course.description} />
                     </div>
                 </div>
                 <div className="grid-25 grid-right">
@@ -88,7 +88,7 @@ const CourseDetail = (props) => {
                             <li className="course--stats--list--item">
                                 <h4>Materials Needed</h4>
                                 <ul>
-                                    {course.materialsNeeded}
+                                    <ReactMarkdown source={course.materialsNeeded} />
                                 </ul>
                             </li>
                         </ul>

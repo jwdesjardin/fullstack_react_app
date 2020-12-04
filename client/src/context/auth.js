@@ -46,13 +46,14 @@ export const Provider = (props) => {
 
   const createUser = async (body) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/users', body)
+      const response = await axios.post('http://localhost:5000/api/users', body);
       if (response.status === 201) {
-        return 'success';
+        return null;
       }
+      
     } catch (error) {
-      console.log(error);
-    }
+        return (error.response.data.errors);
+      }
   }
 
 
@@ -88,7 +89,7 @@ export const Provider = (props) => {
       } 
 
     } catch (error) {
-      throw error;
+      console.log(error);
     }
     
   }
@@ -123,7 +124,9 @@ export const Provider = (props) => {
         headers: {
           Authorization: basicAuth
         }});
+
         console.log(response.status);
+
         if (response.status === 204){
           await getCourses();
           return 'success';

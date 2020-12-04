@@ -1,30 +1,31 @@
 
-import { useRef, useContext } from 'react';
+import { useRef, useContext, useState } from 'react';
 import { AuthContext } from '../context/auth';
 
-
-const ValidationErrors = () => {
-    return (
-        <div>
-            <h2 className="validation--errors--label">Validation errors</h2>
-            <div className="validation-errors">
-            <ul>
-                <li>Please provide a value for "Title"</li>
-                <li>Please provide a value for "Description"</li>
-            </ul>
-            </div>
-        </div>
-    );
-}
 
 const CreateCourse = (props) => {
 
     const { authUser, userPassword, actions } = useContext(AuthContext);
 
+    const [ errors, setErrors ] = useState([]);
+
     const titleInput = useRef('');
     const descInput = useRef('');
     const estTimeInput = useRef('');
     const materialsInput = useRef('');
+
+    //ValidateInputs
+    const validateInputs = () => { 
+        setErrors([]);
+        if (titleInput.current.value === ''){
+            //trigger show the li message
+            setErrors(currentErrors => [...currentErrors, "Please include a title"]);
+        } 
+        if (descInput.current.value === ''){
+            //trigger show the li message
+            setErrors(currentErrors => [...currentErrors, "Please include a description"]);
+        }
+    }
 
     const cancelHandler = (event) => {
         event.preventDefault();
@@ -38,16 +39,18 @@ const CreateCourse = (props) => {
             "description": descInput.current.value,
             "userId": authUser.id
         };
+        validateInputs();
+
         estTimeInput.current.value !== '' ? body.estimatedTime = estTimeInput.current.value : body.estimatedTime = null;
         materialsInput.current.value !== '' ? body.materialsNeeded = materialsInput.current.value : body.materialsNeeded = null;
+         // body.estimatedTime = estTimeInput.current.value !== '' ? estTimeInput.current.value : null;
+        // body.materialsNeeded = materialsInput.current.value !== '' ? materialsInput.current.value : null;
 
         try {
             const response = await actions.createCourse(body, authUser.emailAddress, userPassword);
             if (response === 'success'){
                 props.history.push('/');
-            } else {
-                alert('Course not created');
-            }
+            } 
         } catch (error) {
             console.log(error);
         }
@@ -55,11 +58,25 @@ const CreateCourse = (props) => {
        
     }
 
+
+const displayErrors = errors.length > 0 ? 
+        <div>
+            <h2 className="validation--errors--label">Validation errors</h2>
+            <div className="validation-errors">
+                <ul>
+                    {errors.map(error => <li>{error}</li>)}
+                </ul>
+            </div>
+        </div>
+        : "";
+
+
+
     return (
         <div className="bounds course--detail">
             <h1>Create Course</h1>
             <div>
-            <ValidationErrors />
+            {displayErrors}
             <form>
                 <div className="grid-66">
                 <div className="course--header">

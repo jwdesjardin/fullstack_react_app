@@ -1,15 +1,41 @@
 import { Link } from 'react-router-dom';
-import {useContext, useRef } from 'react';
+import {useContext, useRef, useState } from 'react';
 import { AuthContext } from '../context/auth';
 
 const UserSignUp = (props) => {
     const { actions } = useContext(AuthContext);
+    const [ errors, setErrors ] = useState([]);
      
     const firstNameInput = useRef('');
     const lastNameInput = useRef('');
     const emailInput = useRef('');
     const passwordInput = useRef('');
     const confirmPasswordInput = useRef('');
+
+    //ValidateInputs
+    const validateInputs = () => { 
+        setErrors([]);
+        if (firstNameInput.current.value === ''){
+            //trigger show the li message
+            setErrors(currentErrors => [...currentErrors, "Please include your first name"]);
+        } 
+        if (lastNameInput.current.value === ''){
+            //trigger show the li message
+            setErrors(currentErrors => [...currentErrors, "Please include your last name"]);
+        }
+        if (emailInput.current.value === ''){
+            //trigger show the li message
+            setErrors(currentErrors => [...currentErrors, "Please include your email"]);
+        }
+        if (passwordInput.current.value === ''){
+            //trigger show the li message
+            setErrors(currentErrors => [...currentErrors, "Please include a password"]);
+        }
+        if (passwordInput.current.value !== confirmPasswordInput.current.value){
+            //trigger show the li message
+            setErrors(currentErrors => [...currentErrors, "Please make sure passwords match"]);
+        }
+    }
 
 
 
@@ -26,14 +52,16 @@ const UserSignUp = (props) => {
             "emailAddress": emailInput.current.value,
             "password": confirmPasswordInput.current.value
         };
+        // validateInputs();
 
         try {
             const response =  await actions.createUser(body);
-            if (response === 'success') {
+            if (response === null) {
                 await actions.signIn(emailInput.current.value, confirmPasswordInput.current.value);
                 props.history.push('/');
             } else {
-                alert('User not created');
+                console.log(response);
+                setErrors([...response])
             }
         } catch (error) {
             console.log(error);
@@ -41,12 +69,23 @@ const UserSignUp = (props) => {
         
     }
 
+    const displayErrors = errors.length > 0 ? 
+        <div>
+            <h2 className="validation--errors--label">Validation errors</h2>
+            <div className="validation-errors">
+                <ul>
+                    {errors.map((error, index) => <li key={index}>{error}</li>)}
+                </ul>
+            </div>
+        </div>
+        : "";
 
     return (
         <div className="bounds">
             <div className="grid-33 centered signin">
                 <h1>Sign Up</h1>
                 <div>
+                    {displayErrors}
                     <form>
                         <div><input id="firstName" name="firstName" type="text"  placeholder="First Name" ref={firstNameInput} /></div>
                         <div><input id="lastName" name="lastName" type="text"  placeholder="Last Name" ref={lastNameInput} /></div>
