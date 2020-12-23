@@ -1,63 +1,43 @@
 // import {useEffect, useState} from 'react';
-import {BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom';
-
-import { useContext } from 'react';
-import Courses from './components/Courses';
-import CourseDetail from './components/CourseDetail';
-import Header from './components/Header';
-import { AuthContext } from './context/auth';
-
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import './global.css';
+
 import UserSignIn from './components/UserSignIn';
 import UserSignUp from './components/UserSignUp';
 import UserSignOut from './components/UserSignOut';
-import CreateCourse from './components/CreateCourse';
-import UpdateCourse from './components/UpdateCourse';
-import NotFound from './components/NotFound';
 import Authenticated from './components/Authenticated';
 
+import Courses from './components/Courses';
+import CourseDetail from './components/CourseDetail';
+import CreateCourse from './components/CreateCourse';
+import UpdateCourse from './components/UpdateCourse';
+
+import Header from './components/Header';
+import NotFound from './components/NotFound';
+import Forbidden from './components/Forbidden';
+import UnhandledError from './components/UnhandledError';
+import PrivateRoute from './utils/PrivateRoute';
 
 const App = () => {
-
-  const { authUser } = useContext(AuthContext);
-
-  const PrivateRoute = ({ component: Component , ...rest }) => {
-    
-    return (
-      <Route
-        {...rest}
-        render={(props) =>
-          authUser !== null ? (
-            <Component {...props} {...rest} />
-          ) : (
-            <Redirect
-              to={{
-                pathname: "/signin",
-                state: { from: props.location }
-              }}
-            />
-          )
-        }
-      />
-    );
-  }
-  
-  return (
-    <Router>
-      <Header />
-      <Switch>
-        <Route exact path='/' component={Courses} />
-        <PrivateRoute exact path='/courses/create' component={CreateCourse} />
-        <Route exact path='/courses/:id' component={CourseDetail} />
-        <PrivateRoute exact path='/courses/:id/update' component={UpdateCourse} />
-        <Route exact path='/signin' component={UserSignIn}  />
-        <Route exact path='/signup' component={UserSignUp} />
-        <Route exact path='/signout' component={UserSignOut} />
-        <Route exact path='/authenticated' component={Authenticated} />
-        <Route component={NotFound} />
-      </Switch>
-    </Router>
-    );
-}
+	return (
+		<Router>
+			<Header />
+			<Switch>
+				<Route exact path='/' component={Courses} />
+				<PrivateRoute path='/courses/create' component={CreateCourse} />
+				<PrivateRoute path='/courses/:id/update' component={UpdateCourse} />
+				<Route path='/courses/:id' component={CourseDetail} />
+				<Route path='/signin' component={UserSignIn} />
+				<Route path='/signup' component={UserSignUp} />
+				<Route path='/signout' component={UserSignOut} />
+				<Route path='/authenticated' component={Authenticated} />
+				<Route path='/forbidden' component={Forbidden} />
+				<Route path='/notfound' component={NotFound} />
+				<Route path='/error' component={UnhandledError} />
+				<Route component={NotFound} />
+			</Switch>
+		</Router>
+	);
+};
 
 export default App;

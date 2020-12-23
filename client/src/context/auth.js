@@ -1,163 +1,70 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-
-
 export const AuthContext = React.createContext();
 
-export const Provider = (props) => {
+export const Provider = props => {
+	const [ authUser, setAuthUser ] = useState(
+		localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null
+	);
 
-  const [authUser, setAuthUser] = useState(null);
-  const [userPassword, setUserPassword] = useState('');
+	const [ userPassword, setUserPassword ] = useState(
+		localStorage.getItem('password') ? JSON.parse(localStorage.getItem('password')) : null
+	);
 
+	const signIn = async (email, password) => {
+		const credentials = btoa(email + ':' + password);
+		const basicAuth = 'Basic ' + credentials;
+		const config = {
+			headers: {
+				Authorization: basicAuth
+			}
+		};
+		try {
+			const response = await axios.get('http://localhost:5000/api/users', config);
 
-  const [courses, setCourses] = useState([]);
+			if (response.status === 200) {
+				setAuthUser(response.data);
+				setUserPassword(password);
+				localStorage.setItem('user', JSON.stringify(response.data));
+				localStorage.setItem('password', JSON.stringify(password));
+			}
+		} catch (error) {
+			return error.response;
+		}
+	};
 
-  
-  const signInUser = async (email, password) => {
+	const signOut = () => {
+		setAuthUser(null);
+		setUserPassword('');
+		localStorage.removeItem('user');
+		localStorage.removeItem('password');
+	};
 
-    const credentials = btoa(email + ':' + password);
-    const basicAuth = 'Basic ' + credentials;
+	const createUser = async body => {
+		try {
+			await axios.post('http://localhost:5000/api/users', body);
+		} catch (error) {
+			if (error.response.status === 400) {
+				return (
+					error.response.data.errors || [ error.response.data.message ] || [
+						error.message
+					]
+				);
+			}
+		}
+	};
 
-    try{
-      const response = await axios.get('http://localhost:5000/api/users',  {
-        headers: {
-          Authorization: basicAuth
-        }});
-      
-      if (response.status === 200) {
-        setAuthUser(response.data);
-        setUserPassword(password);
-        return 'success';
-      }
-    }
-    catch(error) {
-        console.log(error);
-    }
-      
- }
+	const value = {
+		authUser,
+		userPassword,
 
+		actions: {
+			signIn,
+			signOut,
+			createUser
+		}
+	};
 
-  const signOutUser = () => {
-    setAuthUser(null);
-    setUserPassword('');
-  }
-
-
-  const createUser = async (body) => {
-    try {
-      const response = await axios.post('http://localhost:5000/api/users', body);
-      if (response.status === 201) {
-        return null;
-      }
-      
-    } catch (error) {
-        return (error.response.data.errors);
-      }
-  }
-
-
-
-  //COURSES
-
-
-  const getCourses = async () => {
-    try {
-      const data = await axios.get('http://localhost:5000/api/courses')
-      setCourses(data.data);
-      return 'success';
-    } catch (error) {
-      console.log(error);
-    }
-
-  }
-
-
-  const createCourse = async (body, email, password) => {
-    
-      const credentials = btoa(email + ':' + password);
-      const basicAuth = 'Basic ' + credentials;
-      try {
-      const res = await axios.post('http://localhost:5000/api/courses', body, {
-        headers: {
-          Authorization: basicAuth
-        }});
-
-      if(res.status === 201){
-        await getCourses();
-        return 'success';
-      } 
-
-    } catch (error) {
-      console.log(error);
-    }
-    
-  }
-
-  const deleteCourse = async (course, email, password) => {
-      const credentials = btoa(email + ':' + password);
-      const basicAuth = 'Basic ' + credentials;
-
-      try {
-        const response = await axios.delete(`http://localhost:5000/api/courses/${course.id}`, {
-          headers: {
-            Authorization: basicAuth
-          }})
-
-          if (response.status === 204){
-            await getCourses();
-            return 'success';
-          }
-      } catch (error) {
-        console.log(error);
-      }
-      
-  }
-
-  const updateCourse = async (course, body, email, password) => {
-    
-      const credentials = btoa(email + ':' + password);
-      const basicAuth = 'Basic ' + credentials;
-
-      try {
-        const response = await axios.put(`http://localhost:5000/api/courses/${course.id}`, body, {
-        headers: {
-          Authorization: basicAuth
-        }});
-
-        console.log(response.status);
-
-        if (response.status === 204){
-          await getCourses();
-          return 'success';
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    
-  }
-
-  const value = {
-    authUser,
-    userPassword,
-    courses,
-    actions: {
-      signIn: signInUser,
-      signOut: signOutUser,
-      createCourse,
-      createUser,
-      updateCourse,
-      deleteCourse,
-      getCourses
-    }
-  }
-  
-    return (
-      <AuthContext.Provider value={value}>
-        { props.children }
-      </AuthContext.Provider>
-    ); 
-}
-
-
-
+	return <AuthContext.Provider value={value}>{props.children}</AuthContext.Provider>;
+};
