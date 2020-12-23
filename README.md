@@ -8,30 +8,36 @@
  cd api
  ```
 
- 2. install dependencies 
+ 1. install dependencies 
 
  ```
  npm install
  ```
 
-3. start the server 
+ 1. seed data 
+
+ ```
+ npm run seed
+ ```
+
+1. start the server 
 
  ```
  npm start
  ```
 
-4. open a new terminal in root project directory and switch into client
+1. open a new terminal in root project directory and switch into client
 
  ```
  cd client
  ```
 
- 5. install dependencies
+ 1. install dependencies
  ```
  npm install
  ```
 
- 6. start app
+ 1. start app
  ```
  npm start
  ```
