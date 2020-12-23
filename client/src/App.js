@@ -1,11 +1,10 @@
 // import {useEffect, useState} from 'react';
-import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './global.css';
 
 import UserSignIn from './components/UserSignIn';
 import UserSignUp from './components/UserSignUp';
 import UserSignOut from './components/UserSignOut';
-import Authenticated from './components/Authenticated';
 
 import Courses from './components/Courses';
 import CourseDetail from './components/CourseDetail';
@@ -30,7 +29,6 @@ const App = () => {
 				<Route path='/signin' component={UserSignIn} />
 				<Route path='/signup' component={UserSignUp} />
 				<Route path='/signout' component={UserSignOut} />
-				<Route path='/authenticated' component={Authenticated} />
 				<Route path='/forbidden' component={Forbidden} />
 				<Route path='/notfound' component={NotFound} />
 				<Route path='/error' component={UnhandledError} />

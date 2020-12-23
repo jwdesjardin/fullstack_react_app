@@ -7,23 +7,24 @@ const Courses = ({ history }) => {
 
 	useEffect(
 		() => {
-			// get courses
 			(async () => {
 				try {
+					// get all courses data from api/courses; setCourses with data
 					const { data } = await axios.get('http://localhost:5000/api/courses');
-					console.log(data);
 					setCourses(data);
+					// this should always work; any error coming back is handled as a server error
 				} catch (error) {
-					console.log(error);
 					history.push('/error');
 				}
 			})();
 		},
+		// repeat on history change
 		[ history ]
 	);
 
 	return (
 		<div className='bounds'>
+			{/* course list */}
 			{courses &&
 				courses.map(course => (
 					<div key={course.id} className='grid-33'>
@@ -31,11 +32,12 @@ const Courses = ({ history }) => {
 							<h4 className='course--label'>Course</h4>
 							<h3 className='course--title'>{course.title}</h3>
 							<h4 className='course--label'>
-								authored by: {`${course.user.firstName} ${course.user.lastName}`}
+								by: {`${course.user.firstName} ${course.user.lastName}`}
 							</h4>
 						</Link>
 					</div>
 				))}
+			{/* new course button */}
 			<div className='grid-33'>
 				<Link className='course--module course--add--module' to='/courses/create'>
 					<h3 className='course--add--title'>

@@ -1,20 +1,20 @@
-
-import {useEffect, useContext } from 'react'; 
+import { useEffect, useContext } from 'react';
 import { AuthContext } from '../context/auth';
 
-const UserSignOut = (props) => {
-    const {actions} = useContext(AuthContext);
+const UserSignOut = ({ history }) => {
+	const { actions } = useContext(AuthContext);
 
-    useEffect(() => {
-        //log out user
-        console.log('LOGGING OUT USER');
-        actions.signOut();
-        props.history.push('/');
-        // eslint-disable-next-line
-    }, [] )
+	useEffect(
+		() => {
+			//log out user redirect to courses page
+			console.log('LOGGING OUT USER');
+			actions.signOut();
+			history.push('/');
+		},
+		[ actions, history ]
+	);
 
-    
-    return(null);
-}
+	return null;
+};
 
 export default UserSignOut;

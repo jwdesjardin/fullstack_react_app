@@ -19,6 +19,8 @@ const UserSignUp = props => {
 
 	const signUpHandler = async event => {
 		event.preventDefault();
+
+		// shape body object from user input
 		const body = {
 			firstName: firstNameInput.current.value,
 			lastName: lastNameInput.current.value,
@@ -27,14 +29,18 @@ const UserSignUp = props => {
 		};
 
 		try {
+			// post the body to the api
 			const res = await actions.createUser(body);
+			// if response is returned setErrors with response
 			if (res) {
 				console.log(res);
 				setErrors([ ...res ]);
+				// if no response, sign in with current credentials and redirect to login
 			} else {
 				await actions.signIn(emailInput.current.value, confirmPasswordInput.current.value);
 				props.history.push('/');
 			}
+			// server error for any error not already caught and returned
 		} catch (error) {
 			props.history.push('/error');
 		}
@@ -45,6 +51,7 @@ const UserSignUp = props => {
 			<div className='grid-33 centered signin'>
 				<h1>Sign Up</h1>
 				<div>
+					{/* show errors if there are any */}
 					{errors.length > 0 && (
 						<div>
 							<h2 className='validation--errors--label'>Validation errors</h2>
@@ -55,6 +62,7 @@ const UserSignUp = props => {
 							</div>
 						</div>
 					)}
+					{/* sign up form */}
 					<form>
 						<div>
 							<input

@@ -13,6 +13,7 @@ export const Provider = props => {
 	);
 
 	const signIn = async (email, password) => {
+		// create the config object for authorization
 		const credentials = btoa(email + ':' + password);
 		const basicAuth = 'Basic ' + credentials;
 		const config = {
@@ -20,21 +21,28 @@ export const Provider = props => {
 				Authorization: basicAuth
 			}
 		};
+
 		try {
+			// sumbit request with auth and get user data from api
 			const response = await axios.get('http://localhost:5000/api/users', config);
 
+			// if we get a user set the user to state and localStorage
 			if (response.status === 200) {
 				setAuthUser(response.data);
 				setUserPassword(password);
 				localStorage.setItem('user', JSON.stringify(response.data));
 				localStorage.setItem('password', JSON.stringify(password));
 			}
+			// if error is unauthorized respond with error data
 		} catch (error) {
-			return error.response;
+			if (error.response.status === 401) {
+				return error.response;
+			}
 		}
 	};
 
 	const signOut = () => {
+		// removes user and password from localstorage and state
 		setAuthUser(null);
 		setUserPassword('');
 		localStorage.removeItem('user');
@@ -43,8 +51,10 @@ export const Provider = props => {
 
 	const createUser = async body => {
 		try {
+			// post body to api
 			await axios.post('http://localhost:5000/api/users', body);
 		} catch (error) {
+			// if error is bad request send errors; if reused email send message
 			if (error.response.status === 400) {
 				return (
 					error.response.data.errors || [ error.response.data.message ] || [

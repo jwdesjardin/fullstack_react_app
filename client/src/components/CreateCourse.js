@@ -20,16 +20,16 @@ const CreateCourse = props => {
 	const createCourseHandler = async event => {
 		event.preventDefault();
 
+		// shape body object from user input
 		const body = {
 			title: titleInput.current.value,
 			description: descInput.current.value,
-			userId: authUser.id
+			userId: authUser.id,
+			estimatedTime: estTimeInput.current.value || null,
+			materialsNeeded: materialsInput.current.value || null
 		};
-		// validateInputs();
 
-		body.estimatedTime = estTimeInput.current.value || null;
-		body.materialsNeeded = materialsInput.current.value || null;
-
+		// create the config object for authorization
 		const credentials = btoa(authUser.emailAddress + ':' + userPassword);
 		const basicAuth = 'Basic ' + credentials;
 		const config = {
@@ -39,10 +39,11 @@ const CreateCourse = props => {
 		};
 
 		try {
+			// post the body and config to the api; redirect to login on success
 			await axios.post('http://localhost:5000/api/courses', body, config);
-
 			props.history.push('/');
 		} catch (error) {
+			// if error is bad request set errors in state; else show server error
 			if (error.status === 400) {
 				const messages =
 					error.response && error.response.data.errors
@@ -59,6 +60,7 @@ const CreateCourse = props => {
 		<div className='bounds course--detail'>
 			<h1>Create Course</h1>
 			<div>
+				{/* show errors if there are any */}
 				{errors.length > 0 && (
 					<div>
 						<h2 className='validation--errors--label'>Validation errors</h2>
@@ -69,6 +71,7 @@ const CreateCourse = props => {
 						</div>
 					</div>
 				)}
+				{/* create course form */}
 				<form>
 					<div className='grid-66'>
 						<div className='course--header'>
@@ -83,7 +86,11 @@ const CreateCourse = props => {
 									ref={titleInput}
 								/>
 							</div>
-							<p>By Joe Smith</p>
+							{authUser && (
+								<p>
+									By: {authUser.firstName} {authUser.lastName}
+								</p>
+							)}
 						</div>
 						<div className='course--description'>
 							<div>

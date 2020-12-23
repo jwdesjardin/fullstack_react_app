@@ -7,19 +7,27 @@ const ActionBar = ({ course, history }) => {
 	const { authUser, userPassword } = useContext(AuthContext);
 
 	const onDeleteClick = async e => {
+		// create the config object for authorization
 		const credentials = btoa(authUser.emailAddress + ':' + userPassword);
 		const basicAuth = 'Basic ' + credentials;
+		const config = {
+			headers: {
+				Authorization: basicAuth
+			}
+		};
 
 		try {
-			const response = await axios.delete(`http://localhost:5000/api/courses/${course.id}`, {
-				headers: {
-					Authorization: basicAuth
-				}
-			});
+			// send delete request with auth to api
+			const response = await axios.delete(
+				`http://localhost:5000/api/courses/${course.id}`,
+				config
+			);
 
+			// if response is 204 redirect to courses
 			if (response.status === 204) {
 				history.push('/');
 			}
+			// if any error then show server error
 		} catch (error) {
 			console.log(error);
 		}
@@ -29,6 +37,7 @@ const ActionBar = ({ course, history }) => {
 		<div className='actions--bar'>
 			<div className='bounds'>
 				<div className='grid-100'>
+					{/* if user is lgged in and they own this course show update and delete */}
 					{authUser &&
 					authUser.id === course.userId && (
 						<span>

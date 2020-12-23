@@ -7,20 +7,23 @@ const UserSignIn = props => {
 
 	const [ email, setEmail ] = useState('');
 	const [ password, setPassword ] = useState('');
-	const [ errors, setErrors ] = useState([]);
+	const [ error, setError ] = useState('');
 
 	const signInHandler = async event => {
 		event.preventDefault();
 
 		try {
 			const response = await actions.signIn(email, password);
+			// if response comes back from signIn set errors with it
 			if (response) {
 				console.log(response.data);
-				setErrors([ ...response.data ]);
+				setError(response.data);
+				// if no response push to either courses or the from in location
 			} else {
 				const loc = props.location.state ? props.location.state.from : '/';
 				props.history.push(loc);
 			}
+			// server error if result of sign in is not access denied or success
 		} catch (error) {
 			props.history.push('/error');
 		}
@@ -36,11 +39,13 @@ const UserSignIn = props => {
 			<div className='grid-33 centered signin'>
 				<h1>Sign In</h1>
 				<div>
-					{errors.length > 0 && (
+					{/* show error if is exists */}
+					{error && (
 						<div>
-							<h2 className='validation--errors--label'>{errors}</h2>
+							<h2 className='validation--errors--label'>{error}</h2>
 						</div>
 					)}
+					{/* sign in form */}
 					<form>
 						<div>
 							<input
