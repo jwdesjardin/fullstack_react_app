@@ -32,7 +32,7 @@ const CourseDetail = props => {
 
 	return (
 		<div>
-			<ActionBar course={course} />
+			<ActionBar course={course} history={props.history} />
 			{/* only display the details if we have a course and user in state */}
 			{course &&
 			course.user && (

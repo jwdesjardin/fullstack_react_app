@@ -37,6 +37,8 @@ export const Provider = props => {
 		} catch (error) {
 			if (error.response.status === 401) {
 				return error.response;
+			} else {
+				throw error;
 			}
 		}
 	};
@@ -61,6 +63,8 @@ export const Provider = props => {
 						error.message
 					]
 				);
+			} else {
+				throw error;
 			}
 		}
 	};

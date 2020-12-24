@@ -30,7 +30,7 @@ router.get(
 	'/users',
 	authorization,
 	asyncHandler(async (req, res) => {
-		//Returns the currently authenticated user
+		// Returns the currently authenticated user
 		const user = await User.findOne({
 			attributes: { exclude: [ 'password', 'createdAt', 'updatedAt' ] },
 			where: { emailAddress: req.currentUser.emailAddress }
@@ -45,7 +45,6 @@ router.post(
 	userValidator,
 	asyncHandler(async (req, res) => {
 		//Creates a user, sets the Location header to "/", and returns no content
-
 		let password = req.body.password;
 		req.body.password = bcrypt.hashSync(password, 10);
 

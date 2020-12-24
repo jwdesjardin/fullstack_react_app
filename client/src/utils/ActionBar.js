@@ -27,9 +27,17 @@ const ActionBar = ({ course, history }) => {
 			if (response.status === 204) {
 				history.push('/');
 			}
+
 			// if any error then show server error
 		} catch (error) {
-			console.log(error);
+			if (error.response.status === 403) {
+				history.push('/forbidden');
+			}
+			if (error.response.status === 404) {
+				history.push('/notfound');
+			} else {
+				history.push('/error');
+			}
 		}
 	};
 

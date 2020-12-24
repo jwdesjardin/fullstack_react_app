@@ -44,7 +44,7 @@ const CreateCourse = props => {
 			props.history.push('/');
 		} catch (error) {
 			// if error is bad request set errors in state; else show server error
-			if (error.status === 400) {
+			if (error.response.status === 400) {
 				const messages =
 					error.response && error.response.data.errors
 						? error.response.data.errors
