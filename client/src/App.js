@@ -1,5 +1,5 @@
 // import {useEffect, useState} from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import './global.css';
 
 import UserSignIn from './components/UserSignIn';
@@ -32,7 +32,7 @@ const App = () => {
 				<Route path='/forbidden' component={Forbidden} />
 				<Route path='/notfound' component={NotFound} />
 				<Route path='/error' component={UnhandledError} />
-				<Route component={NotFound} />
+				<Route render={() => <Redirect to='/notfound' />} />
 			</Switch>
 		</Router>
 	);
