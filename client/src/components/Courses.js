@@ -32,7 +32,8 @@ const Courses = ({ history }) => {
 							<h4 className='course--label'>Course</h4>
 							<h3 className='course--title'>{course.title}</h3>
 							<h4 className='course--label'>
-								by: {`${course.user.firstName} ${course.user.lastName}`}
+								by:{' '}
+								{course.user && `${course.user.firstName} ${course.user.lastName}`}
 							</h4>
 						</Link>
 					</div>

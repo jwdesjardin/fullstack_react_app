@@ -3,13 +3,16 @@
 // load modules
 const express = require('express');
 const morgan = require('morgan');
-var cors = require('cors');
+const cors = require('cors');
+const path = require('path');
+const dotenv = require('dotenv');
+
 // variable to enable global error logging
-const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
 
 // create the Express app
 const app = express();
 
+dotenv.config();
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));
 app.use(cors());
@@ -33,10 +36,28 @@ const apiRoutes = require('./routes/api');
 
 app.use('/api', apiRoutes);
 
+// changes __dirname to parent directory
+const split = __dirname.split('/');
+split.pop();
+__dirname = '/' + split.join('/');
+
+if (process.env.NODE_ENV === 'production') {
+	app.use(express.static(path.join(__dirname, '/client/build')));
+
+	app.get('*', (req, res) =>
+		res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
+	);
+} else {
+	app.get('/', (req, res) => {
+		res.send('API is running...');
+	});
+}
+
 // setup a friendly greeting for the root route
 app.get('/', (req, res) => {
 	res.json({
-		message: 'Welcome to the REST API project! Head to "/api/courses" to check out the course list'
+		message:
+			'Welcome to the REST API project! Head to "/api/courses" to check out the course list'
 	});
 });
 
@@ -56,9 +77,9 @@ app.use((err, req, res, next) => {
 });
 
 // set our port
-app.set('port', process.env.PORT || 5000);
+const PORT = process.env.PORT || 5000;
 
 // start listening on our port
-const server = app.listen(app.get('port'), () => {
-	console.log(`Express server is listening on port ${server.address().port}`);
+app.listen(PORT, () => {
+	console.log(`Express server is listening on port ${PORT}`);
 });

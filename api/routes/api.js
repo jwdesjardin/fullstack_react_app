@@ -68,16 +68,17 @@ router.get(
 	'/courses',
 	asyncHandler(async (req, res) => {
 		//Returns a list of courses (including the user that owns each course)
-		const courses = await Course.findAll({
-			attributes: { exclude: [ 'createdAt', 'updatedAt' ] },
-			include: [
-				{
-					model: User,
-					as: 'user',
-					attributes: { exclude: [ 'password', 'createdAt', 'updatedAt' ] }
-				}
-			]
-		});
+		// const courses = await Course.findAll({
+		// 	attributes: { exclude: [ 'createdAt', 'updatedAt' ] },
+		// 	include: [
+		// 		{
+		// 			model: User,
+		// 			as: 'user',
+		// 			attributes: { exclude: [ 'password', 'createdAt', 'updatedAt' ] }
+		// 		}
+		// 	]
+		// });
+		const courses = await Course.findAll();
 		res.status(200).json(courses);
 	})
 );
