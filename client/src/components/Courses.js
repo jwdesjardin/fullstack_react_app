@@ -10,7 +10,7 @@ const Courses = ({ history }) => {
 			(async () => {
 				try {
 					// get all courses data from api/courses; setCourses with data
-					const { data } = await axios.get('http://localhost:5000/api/courses');
+					const { data } = await axios.get('/api/courses');
 					setCourses(data);
 					// this should always work; any error coming back is handled as a server error
 				} catch (error) {

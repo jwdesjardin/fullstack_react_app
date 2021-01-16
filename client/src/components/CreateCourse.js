@@ -40,7 +40,7 @@ const CreateCourse = props => {
 
 		try {
 			// post the body and config to the api; redirect to login on success
-			await axios.post('http://localhost:5000/api/courses', body, config);
+			await axios.post('/api/courses', body, config);
 			props.history.push('/');
 		} catch (error) {
 			// if error is bad request set errors in state; else show server error

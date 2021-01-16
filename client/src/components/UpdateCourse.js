@@ -14,7 +14,7 @@ const UpdateCourse = ({ history, match }) => {
 			(async () => {
 				try {
 					// get course detail from api
-					const { data } = await axios.get(`http://localhost:5000/api/courses/${id}`);
+					const { data } = await axios.get(`/api/courses/${id}`);
 					if (data) {
 						// if the logged in user does not match the course fetched
 						if (authUser && data.user.id !== authUser.id) {
@@ -66,11 +66,7 @@ const UpdateCourse = ({ history, match }) => {
 
 		try {
 			// put body and config to api at the selected course
-			const response = await axios.put(
-				`http://localhost:5000/api/courses/${course.id}`,
-				body,
-				config
-			);
+			const response = await axios.put(`/api/courses/${course.id}`, body, config);
 			// if response is successful redirect to courses
 			if (response.status === 204) {
 				history.push('/');

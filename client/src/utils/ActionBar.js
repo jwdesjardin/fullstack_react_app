@@ -18,10 +18,7 @@ const ActionBar = ({ course, history }) => {
 
 		try {
 			// send delete request with auth to api
-			const response = await axios.delete(
-				`http://localhost:5000/api/courses/${course.id}`,
-				config
-			);
+			const response = await axios.delete(`/api/courses/${course.id}`, config);
 
 			// if response is 204 redirect to courses
 			if (response.status === 204) {

@@ -12,7 +12,7 @@ const CourseDetail = props => {
 			(async () => {
 				try {
 					// get data from api/courses/id; setCourse with data
-					const { data } = await axios.get(`http://localhost:5000/api/courses/${id}`);
+					const { data } = await axios.get(`/api/courses/${id}`);
 					if (data) {
 						setCourse(data);
 					}
