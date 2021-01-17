@@ -10,7 +10,8 @@ const db = {};
 // 	host: 'localhost',
 // 	dialect: 'postgres'
 // });
-const sequelize = new Sequelize(process.env.DB_URL);
+
+const sequelize = new Sequelize(process.env.DATABASE_URL);
 
 fs
 	.readdirSync(__dirname)
