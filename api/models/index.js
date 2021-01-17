@@ -6,12 +6,35 @@ const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
 const db = {};
 
-// const sequelize = new Sequelize('postgres', process.env.DB_USER, process.env.DB_PASSWORD, {
-// 	host: 'localhost',
-// 	dialect: 'postgres'
-// });
+let sequelize;
 
-const sequelize = new Sequelize(process.env.DATABASE_URL + '?sslmode=require');
+if (process.env.NODE_ENV === 'production') {
+	console.log('prod 1');
+	sequelize = new Sequelize(
+		process.env.DB_DATABASE,
+		process.env.DB_USER,
+		process.env.DB_PASSWORD,
+		{
+			host: process.env.HOST,
+			dialect: 'postgres',
+			native: true,
+			ssl: true
+		}
+	);
+} else {
+	console.log('dev 2');
+	sequelize = new Sequelize(
+		process.env.DB_DATABASE,
+		process.env.DB_USER,
+		process.env.DB_PASSWORD,
+		{
+			host: process.env.HOST,
+			dialect: 'postgres',
+			native: true,
+			ssl: true
+		}
+	);
+}
 
 fs
 	.readdirSync(__dirname)
