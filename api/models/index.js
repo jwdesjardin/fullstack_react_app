@@ -11,7 +11,7 @@ const db = {};
 // 	dialect: 'postgres'
 // });
 
-const sequelize = new Sequelize(process.env.DATABASE_URL);
+const sequelize = new Sequelize(process.env.DATABASE_URL + '?sslmode=require');
 
 fs
 	.readdirSync(__dirname)
