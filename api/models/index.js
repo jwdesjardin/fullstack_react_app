@@ -6,8 +6,15 @@ const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
 const db = {};
 
+let sequelize;
+
 if (process.env.DATABASE_URL) {
 	// the application is executed on Heroku ... use the postgres database
+	sequelize = new Sequelize(process.env.DATABASE_URL, {
+		dialect: 'postgres',
+		protocol: 'postgres'
+	});
+} else {
 	sequelize = new Sequelize(process.env.DATABASE_URL, {
 		dialect: 'postgres',
 		protocol: 'postgres'
