@@ -24,10 +24,7 @@ export const Provider = props => {
 
 		try {
 			// sumbit request with auth and get user data from api
-			const response = await axios.get(
-				'https://courses-final-react.herokuapp.com/api/users',
-				config
-			);
+			const response = await axios.get('/api/users', config);
 
 			// if we get a user set the user to state and localStorage
 			if (response.status === 200) {

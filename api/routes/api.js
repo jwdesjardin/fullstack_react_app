@@ -68,6 +68,7 @@ router.get(
 	'/courses',
 	asyncHandler(async (req, res) => {
 		// Returns a list of courses (including the user that owns each course)
+
 		const courses = await Course.findAll({
 			attributes: { exclude: [ 'createdAt', 'updatedAt' ] },
 			include: [
